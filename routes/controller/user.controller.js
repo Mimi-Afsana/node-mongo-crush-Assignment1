@@ -146,7 +146,7 @@ const deleteAUser = (req, res) => {
     res.send(`${id} id not found`);
   }
 
-  //   res.send("delete a user");
+  
 };
 
 module.exports = {
