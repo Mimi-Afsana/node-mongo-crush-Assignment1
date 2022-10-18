@@ -8,9 +8,8 @@ router.get("/random", controller.randomUser);
 router.post("/save", controller.saveAUser);
 router.put("/bulkUpdate", controller.updateMultipleUser);
 
-router
-  .route("/:id")
-  .put(controller.updateMultipleUser)
-  .delete(controller.deleteAUser);
+
+
+router.route("/:id").put(controller.updateAUser).delete(controller.deleteAUser);
 
 module.exports = router;

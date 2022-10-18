@@ -1,9 +1,9 @@
 const fs = require("fs");
 
 // update multiple user functionality
-function findUserTwoArray(ids, allUsers) {
-  ids.map((user) => {
-    allUsers.map((user2) => {
+function findUserTwoArray(userId, allUser) {
+  userId.map((user) => {
+    allUser.map((user2) => {
       if (user.id == user2.id) {
         user?.name ? (user2.name = user?.name) : user2?.name;
         user?.gender ? (user2.gender = user?.gender) : user2?.gender;
@@ -16,58 +16,59 @@ function findUserTwoArray(ids, allUsers) {
     });
   });
   // console.log(allUsers);
-  return allUsers;
+  return allUser;
 }
 
-// get random user 
+// get all user
+const getAllUser = (req, res) => {
+  const { limits } = req?.query;
+  const allUserJson = fs.readFileSync("user.json");
+  let allUsers = JSON.parse(allUserJson);
+  const limitUser = allUsers.slice(0, limits);
+  res.send(limitUser);
+};
+
+//random user
 const randomUser = (req, res) => {
   fs.readFile("./user.json", (err, data) => {
     if (err) {
       res.write("failed data can not find");
+      res.status(403, "failed data");
     } else {
       const allUser = JSON.parse(data);
-      const randomUser = allUser[Math.floor(Math.random() * allUser.length)];
-      res.send(randomUser);
+      const random = allUser[Math.ceil(Math.random() * allUser.length)];
+      res.send(random);
     }
   });
-};
-
-// get all user api
-const getAllUser = (req, res) => {
-  const { limit } = req?.query;
-  const allUserJson = fs.readFileSync("user.json");
-  let allUsers = JSON.parse(allUserJson);
-  const limitUser = allUsers.slice(0, limit);
-  res.send(limitUser);
 };
 
 // save a user in json file api
 const saveAUser = (req, res) => {
   const newData = req.body;
-
-  const allUserJson = fs.readFileSync("user.json");
-  let allUsers = JSON.parse(allUserJson);
-
+  const allUser = fs.readFileSync("user.json");
+  let allUsers = JSON.parse(allUser);
   allUsers.push(newData);
   const allUsersStringfy = JSON.stringify(allUsers);
   fs.writeFile("user.json", allUsersStringfy, (err) => {
     if (err) {
-      res.write("Data failed to save");
+      res.write("Data failed can not save");
+      res.status(403, "can not save data");
       res.end();
     } else {
       res.write(allUsersStringfy);
+      res.status(200, "user saved successfully");
       res.end();
     }
   });
 };
 
-// update a user api
+// update a user api by using id
 const updateAUser = (req, res) => {
   const { id } = req.params;
   const { name, gender, contact, address, photoUrl } = req?.body;
 
-  const allUserJson = fs.readFileSync("user.json");
-  let allUsers = JSON.parse(allUserJson);
+  const allUser = fs.readFileSync("user.json");
+  let allUsers = JSON.parse(allUser);
 
   const idExits = allUsers.some((userExits) => userExits.id === Number(id));
   if (idExits) {
@@ -98,12 +99,12 @@ const updateAUser = (req, res) => {
   //   res.send();
 };
 
-// multiple user update
+// update multiple user update
 const updateMultipleUser = (req, res) => {
   const ids = req.body;
 
-  const allUserJson = fs.readFileSync("user.json");
-  let allUsers = JSON.parse(allUserJson);
+  const allUser = fs.readFileSync("user.json");
+  let allUsers = JSON.parse(allUser);
 
   const updateMultipleUser = findUserTwoArray(ids, allUsers);
 
@@ -118,11 +119,9 @@ const updateMultipleUser = (req, res) => {
       res.end();
     }
   });
-
-  // res.send(updateMultipleUser);
 };
 
-// delete user api
+// delete a user by using id
 const deleteAUser = (req, res) => {
   const { id } = req.params;
 
