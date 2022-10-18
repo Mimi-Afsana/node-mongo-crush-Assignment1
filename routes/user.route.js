@@ -6,10 +6,9 @@ const router = express.Router();
 router.get("/all", controller.getAllUser);
 router.get("/random", controller.randomUser);
 router.post("/save", controller.saveAUser);
-router.put("/bulkUpdate", controller.updateMultipleUser);
+router.put("/bulk-update", controller.updateMultipleUser);
 
-
-
-router.route("/:id").put(controller.updateAUser).delete(controller.deleteAUser);
+router.route("/update/:id").put(controller.updateAUser);
+router.route("/delete/:id").delete(controller.deleteAUser);
 
 module.exports = router;
